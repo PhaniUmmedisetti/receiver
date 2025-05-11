@@ -1,0 +1,33 @@
+name: receiver
+description: A Flutter app to receive and display uploaded files.
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  supabase_flutter: ^2.7.0
+  geolocator: ^13.0.1
+  get: ^4.6.6
+  json_annotation: ^4.9.0
+  url_launcher: ^6.3.0
+  get_storage: ^2.1.1
+  permission_handler: ^11.3.1
+  http: ^1.2.2
+  path_provider: ^2.1.4
+  open_file: ^3.5.6
+  # image_gallery_saver: ^2.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.12
+  json_serializable: ^6.8.0
+
+flutter:
+  uses-material-design: true
