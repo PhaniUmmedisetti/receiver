@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:flutter_image_gallery_saver/flutter_image_gallery_saver.dart';
 import '../constants/app_colors.dart';
 import '../controllers/language_controller.dart';
 import '../localization/app_translations.dart';
@@ -79,7 +79,6 @@ class FileDetailsScreen extends StatelessWidget {
     final filePath = await _downloadFile(url, fileName);
     if (filePath != null) {
       if (action == 'view') {
-        // For "View", download and open the file
         debugPrint('Attempting to open file: $filePath');
         final result = await OpenFile.open(filePath);
         debugPrint('$action file result: ${result.message} (Type: ${result.type})');
@@ -101,16 +100,29 @@ class FileDetailsScreen extends StatelessWidget {
           );
         }
       } else if (action == 'download') {
-        // For "Download", just notify the user of the file path
-        debugPrint('Download completed, file saved at: $filePath');
-        Get.snackbar(
-          'Success',
-          'File downloaded successfully! Saved to app storage at: $filePath',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.white,
-          colorText: Colors.black,
-          duration: const Duration(seconds: 5),
-        );
+        debugPrint('Saving file to gallery: $filePath');
+        try {
+          await FlutterImageGallerySaver.saveFile(filePath);
+          debugPrint('Gallery save completed successfully');
+          Get.snackbar(
+            'Success',
+            'File downloaded and saved to gallery! Open your gallery app to view it.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.white,
+            colorText: Colors.black,
+            duration: const Duration(seconds: 5),
+          );
+        } catch (e) {
+          debugPrint('Error saving to gallery: $e');
+          Get.snackbar(
+            'Success (Limited)',
+            'File downloaded to app storage at: $filePath\nFailed to save to gallery: $e',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.white,
+            colorText: Colors.black,
+            duration: const Duration(seconds: 5),
+          );
+        }
       }
     } else {
       debugPrint('File path is null, cannot proceed with $action');
