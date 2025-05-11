@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
@@ -100,13 +101,14 @@ class FileDetailsScreen extends StatelessWidget {
           );
         }
       } else if (action == 'download') {
+        // Step 1: Save to gallery
         debugPrint('Saving file to gallery: $filePath');
         try {
           await FlutterImageGallerySaver.saveFile(filePath);
           debugPrint('Gallery save completed successfully');
           Get.snackbar(
             'Success',
-            'File downloaded and saved to gallery! Open your gallery app to view it.',
+            'File downloaded and saved to gallery!',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.white,
             colorText: Colors.black,
@@ -116,12 +118,28 @@ class FileDetailsScreen extends StatelessWidget {
           debugPrint('Error saving to gallery: $e');
           Get.snackbar(
             'Success (Limited)',
-            'File downloaded to app storage at: $filePath\nFailed to save to gallery: $e',
+            'File downloaded but failed to save to gallery: $e\nFile is available at: $filePath',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.white,
             colorText: Colors.black,
             duration: const Duration(seconds: 5),
           );
+        }
+
+        // Step 2: Open the file after saving
+        debugPrint('Attempting to open file after download: $filePath');
+        final result = await OpenFile.open(filePath);
+        debugPrint('$action file result: ${result.message} (Type: ${result.type})');
+        if (result.type != ResultType.done) {
+          Get.snackbar(
+            'Error',
+            'Failed to view file after download: ${result.message}',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.white,
+            colorText: Colors.black,
+          );
+        } else {
+          debugPrint('File viewed successfully after download');
         }
       }
     } else {
