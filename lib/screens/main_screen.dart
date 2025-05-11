@@ -41,15 +41,11 @@ class _MainScreenState extends State<MainScreen> {
       if (position != null) {
         setState(() {
           userLocation = position;
-          if (kDebugMode) {
-            print('User location: ${userLocation!.latitude}, ${userLocation!.longitude}');
-          }
+          if (kDebugMode) {}
         });
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching user location: $e');
-      }
+      if (kDebugMode) {}
       Get.snackbar(
         'Error',
         'Failed to fetch user location: $e',
@@ -71,37 +67,35 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   bool _isWithinGeofence(UploadedFile file) {
-    if (userLocation == null || file.latitude == null || file.longitude == null) {
-      if (kDebugMode) {
-        print('Geofencing failed: userLocation=$userLocation, file.latitude=${file.latitude}, file.longitude=${file.longitude}');
-      }
+    if (userLocation == null ||
+        file.latitude == null ||
+        file.longitude == null) {
+      if (kDebugMode) {}
       return false;
     }
 
     try {
-      double fileLat = double.parse(file.latitude!);
-      double fileLon = double.parse(file.longitude!);
+      double fileLat = file.latitude ?? 0;
+      double fileLon = file.longitude ?? 0;
       double distance = Geolocator.distanceBetween(
         userLocation!.latitude,
         userLocation!.longitude,
         fileLat,
         fileLon,
       );
-      if (kDebugMode) {
-        print('File: ${file.name}, Location: ($fileLat, $fileLon), Distance: $distance meters');
-      }
+      if (kDebugMode) {}
       return distance <= geofenceRadius;
     } catch (e) {
-      if (kDebugMode) {
-        print('Error parsing location for file ${file.name}: $e');
-      }
+      if (kDebugMode) {}
       return false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (databaseService == null || languageController == null || locationService == null) {
+    if (databaseService == null ||
+        languageController == null ||
+        locationService == null) {
       return const Scaffold(
         body: Center(child: Text('Error: Unable to initialize screen')),
       );
@@ -111,7 +105,8 @@ class _MainScreenState extends State<MainScreen> {
       () => Scaffold(
         appBar: AppBar(
           title: Text(
-            AppTranslations.translate('appTitle', languageController.locale.value),
+            AppTranslations.translate(
+                'appTitle', languageController.locale.value),
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -146,17 +141,13 @@ class _MainScreenState extends State<MainScreen> {
           child: SafeArea(
             child: Obx(
               () {
-                if (kDebugMode) {
-                  print('Total files before geofencing: ${databaseService.files.length}');
-                }
+                if (kDebugMode) {}
 
                 final filteredFiles = databaseService.files
                     // .where((file) => _isWithinGeofence(file)) // Temporarily disabled geofencing
                     .toList();
 
-                if (kDebugMode) {
-                  print('Files after geofencing (disabled): ${filteredFiles.length}');
-                }
+                if (kDebugMode) {}
 
                 if (isLoading) {
                   return const Center(
@@ -167,7 +158,8 @@ class _MainScreenState extends State<MainScreen> {
                 if (filteredFiles.isEmpty) {
                   return Center(
                     child: Text(
-                      AppTranslations.translate('noFiles', languageController.locale.value),
+                      AppTranslations.translate(
+                          'noFiles', languageController.locale.value),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,

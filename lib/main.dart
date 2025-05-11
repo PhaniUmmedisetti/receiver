@@ -38,13 +38,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final languageController = Get.find<LanguageController>();
 
-    if (languageController == null) {
-      return const MaterialApp(
-        home: Scaffold(
-          body: Center(child: Text('Error: Unable to initialize app')),
-        ),
-      );
-    }
+    // if (languageController == null) {
+    //   return const MaterialApp(
+    //     home: Scaffold(
+    //       body: Center(child: Text('Error: Unable to initialize app')),
+    //     ),
+    //   );
+    // }
 
     return Obx(
       () => GetMaterialApp(

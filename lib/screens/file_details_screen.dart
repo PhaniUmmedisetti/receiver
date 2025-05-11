@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
@@ -16,32 +15,22 @@ class FileDetailsScreen extends StatelessWidget {
 
   Future<String?> _downloadFile(String url, String fileName) async {
     try {
-      debugPrint('Starting download for URL: $url');
       final directory = await getApplicationDocumentsDirectory();
       final filePath = '${directory.path}/$fileName';
-      debugPrint('Target file path: $filePath');
 
       final file = File(filePath);
       if (await file.exists()) {
-        debugPrint('File already exists at: $filePath');
         return filePath;
       }
 
-      debugPrint('Initiating HTTP GET request...');
       final response = await http.get(Uri.parse(url));
-      debugPrint('HTTP response status code: ${response.statusCode}');
-      debugPrint('HTTP response body length: ${response.bodyBytes.length} bytes');
 
       if (response.statusCode == 200) {
-        debugPrint('Writing file to disk...');
         await file.writeAsBytes(response.bodyBytes);
-        debugPrint('File downloaded and saved successfully: $filePath');
 
         if (await file.exists()) {
-          debugPrint('File verified to exist after saving: $filePath');
           return filePath;
         } else {
-          debugPrint('File does not exist after saving: $filePath');
           Get.snackbar(
             'Error',
             'File was downloaded but cannot be found on disk.',
@@ -52,7 +41,6 @@ class FileDetailsScreen extends StatelessWidget {
           return null;
         }
       } else {
-        debugPrint('Failed to download file: HTTP ${response.statusCode}');
         Get.snackbar(
           'Error',
           'Failed to download file: HTTP ${response.statusCode}',
@@ -63,7 +51,6 @@ class FileDetailsScreen extends StatelessWidget {
         return null;
       }
     } catch (e) {
-      debugPrint('Error downloading file: $e');
       Get.snackbar(
         'Error',
         'Failed to download file: $e',
@@ -75,14 +62,13 @@ class FileDetailsScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _handleFileAction(String url, String fileName, String action) async {
-    debugPrint('Handling file action: $action');
+  Future<void> _handleFileAction(
+      String url, String fileName, String action) async {
     final filePath = await _downloadFile(url, fileName);
     if (filePath != null) {
       if (action == 'view') {
-        debugPrint('Attempting to open file: $filePath');
         final result = await OpenFile.open(filePath);
-        debugPrint('$action file result: ${result.message} (Type: ${result.type})');
+
         if (result.type != ResultType.done) {
           Get.snackbar(
             'Error',
@@ -102,10 +88,10 @@ class FileDetailsScreen extends StatelessWidget {
         }
       } else if (action == 'download') {
         // Step 1: Save to gallery
-        debugPrint('Saving file to gallery: $filePath');
+
         try {
           await FlutterImageGallerySaver.saveFile(filePath);
-          debugPrint('Gallery save completed successfully');
+
           Get.snackbar(
             'Success',
             'File downloaded and saved to gallery!',
@@ -115,7 +101,6 @@ class FileDetailsScreen extends StatelessWidget {
             duration: const Duration(seconds: 5),
           );
         } catch (e) {
-          debugPrint('Error saving to gallery: $e');
           Get.snackbar(
             'Success (Limited)',
             'File downloaded but failed to save to gallery: $e\nFile is available at: $filePath',
@@ -127,9 +112,9 @@ class FileDetailsScreen extends StatelessWidget {
         }
 
         // Step 2: Open the file after saving
-        debugPrint('Attempting to open file after download: $filePath');
+
         final result = await OpenFile.open(filePath);
-        debugPrint('$action file result: ${result.message} (Type: ${result.type})');
+
         if (result.type != ResultType.done) {
           Get.snackbar(
             'Error',
@@ -138,22 +123,19 @@ class FileDetailsScreen extends StatelessWidget {
             backgroundColor: Colors.white,
             colorText: Colors.black,
           );
-        } else {
-          debugPrint('File viewed successfully after download');
-        }
+        } else {}
       }
-    } else {
-      debugPrint('File path is null, cannot proceed with $action');
-    }
+    } else {}
   }
 
   @override
   Widget build(BuildContext context) {
-    final LanguageController languageController = Get.find<LanguageController>();
+    final LanguageController languageController =
+        Get.find<LanguageController>();
     final arguments = Get.arguments;
     final UploadedFile? file = arguments != null ? arguments['file'] : null;
 
-    if (languageController == null || file == null) {
+    if (file == null) {
       return const Scaffold(
         body: Center(child: Text('Error: Unable to initialize screen')),
       );
@@ -167,7 +149,8 @@ class FileDetailsScreen extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
           title: Text(
-            AppTranslations.translate('fileDetails', languageController.locale.value),
+            AppTranslations.translate(
+                'fileDetails', languageController.locale.value),
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -243,13 +226,15 @@ class FileDetailsScreen extends StatelessWidget {
                         },
                         icon: const Icon(Icons.visibility, size: 24),
                         label: Text(
-                          AppTranslations.translate('viewButton', languageController.locale.value),
+                          AppTranslations.translate(
+                              'viewButton', languageController.locale.value),
                           style: const TextStyle(fontSize: 16),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -259,17 +244,20 @@ class FileDetailsScreen extends StatelessWidget {
                       const SizedBox(width: 16),
                       ElevatedButton.icon(
                         onPressed: () async {
-                          await _handleFileAction(file.url, file.name, 'download');
+                          await _handleFileAction(
+                              file.url, file.name, 'download');
                         },
                         icon: const Icon(Icons.download, size: 24),
                         label: Text(
-                          AppTranslations.translate('downloadButton', languageController.locale.value),
+                          AppTranslations.translate('downloadButton',
+                              languageController.locale.value),
                           style: const TextStyle(fontSize: 16),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

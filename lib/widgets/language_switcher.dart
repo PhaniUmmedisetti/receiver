@@ -11,9 +11,9 @@ class LanguageSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     final languageController = Get.find<LanguageController>();
 
-    if (languageController == null) {
-      return const SizedBox.shrink();
-    }
+    // if (languageController == null) {
+    //   return const SizedBox.shrink();
+    // }
 
     return Obx(
       () => DropdownButton<Locale>(

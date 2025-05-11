@@ -6,10 +6,15 @@ part 'file.g.dart';
 class UploadedFile {
   final String name;
   final String url;
+
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
-  final String? latitude;
-  final String? longitude;
+
+  @JsonKey(name: 'lat')
+  final double? latitude;
+
+  @JsonKey(name: 'long')
+  final double? longitude;
 
   UploadedFile({
     required this.name,

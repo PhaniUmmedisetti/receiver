@@ -10,8 +10,8 @@ UploadedFile _$UploadedFileFromJson(Map<String, dynamic> json) => UploadedFile(
       name: json['name'] as String,
       url: json['url'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
-      latitude: json['latitude'] as String?,
-      longitude: json['longitude'] as String?,
+      latitude: (json['lat'] as num?)?.toDouble(),
+      longitude: (json['long'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$UploadedFileToJson(UploadedFile instance) =>
@@ -19,6 +19,6 @@ Map<String, dynamic> _$UploadedFileToJson(UploadedFile instance) =>
       'name': instance.name,
       'url': instance.url,
       'created_at': instance.createdAt.toIso8601String(),
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
+      'lat': instance.latitude,
+      'long': instance.longitude,
     };
