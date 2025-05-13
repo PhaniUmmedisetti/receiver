@@ -9,7 +9,6 @@ import '../controllers/language_controller.dart';
 import '../localization/app_translations.dart';
 import '../services/database_service.dart';
 import '../services/location_service.dart';
-import '../models/file.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -31,11 +30,11 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUserLocation();
-    _fetchFiles();
+    fetchUserLocation();
+    fetchFiles();
   }
 
-  Future<void> _fetchUserLocation() async {
+  Future<void> fetchUserLocation() async {
     try {
       final position = await locationService.getCurrentLocation();
       if (position != null) {
@@ -56,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  Future<void> _fetchFiles() async {
+  Future<void> fetchFiles() async {
     setState(() {
       isLoading = true;
     });
@@ -66,41 +65,33 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  bool _isWithinGeofence(UploadedFile file) {
-    if (userLocation == null ||
-        file.latitude == null ||
-        file.longitude == null) {
-      if (kDebugMode) {}
-      return false;
-    }
+  // bool _isWithinGeofence(UploadedFile file) {
+  //   if (userLocation == null ||
+  //       file.latitude == null ||
+  //       file.longitude == null) {
+  //     if (kDebugMode) {}
+  //     return false;
+  //   }
 
-    try {
-      double fileLat = file.latitude ?? 0;
-      double fileLon = file.longitude ?? 0;
-      double distance = Geolocator.distanceBetween(
-        userLocation!.latitude,
-        userLocation!.longitude,
-        fileLat,
-        fileLon,
-      );
-      if (kDebugMode) {}
-      return distance <= geofenceRadius;
-    } catch (e) {
-      if (kDebugMode) {}
-      return false;
-    }
-  }
+  //   try {
+  //     double fileLat = file.latitude ?? 0;
+  //     double fileLon = file.longitude ?? 0;
+  //     double distance = Geolocator.distanceBetween(
+  //       userLocation!.latitude,
+  //       userLocation!.longitude,
+  //       fileLat,
+  //       fileLon,
+  //     );
+  //     if (kDebugMode) {}
+  //     return distance <= geofenceRadius;
+  //   } catch (e) {
+  //     if (kDebugMode) {}
+  //     return false;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    if (databaseService == null ||
-        languageController == null ||
-        locationService == null) {
-      return const Scaffold(
-        body: Center(child: Text('Error: Unable to initialize screen')),
-      );
-    }
-
     return Obx(
       () => Scaffold(
         appBar: AppBar(
@@ -118,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: _fetchFiles,
+              onPressed: fetchFiles,
             ),
             const Padding(
               padding: EdgeInsets.only(right: 16.0),
